@@ -69,7 +69,7 @@ exports.signin = (req, res) => {
                 const token = jwtToken.sign({ id: user?.id }, config?.secret, {
                     algorithm: 'HS256',
                     allowInsecureKeySizes: true,
-                    expiresIn: 86400, // 24 hours
+                    expiresIn: 604800, // 1 Week
                 });
                 res?.status(200).json({
                     success: true,
