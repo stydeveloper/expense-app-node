@@ -57,14 +57,24 @@ exports.addNewExpenseHandler = (req, res) => {
 
 exports.getExpenseDataHandler = (req, res) => {
     const userId = getIdByHeader(req);
-    let expenseDetailData;
+    let count = 0;
     Expense.find({ user_Id: userId })
         .then(response => {
             if (response) {
                 ExpenseDetail.find({ user_Id: userId })
                     .then(detailResponse => {
                         if (detailResponse) {
-                            expenseDetailData = detailResponse;
+                            detailResponse.map((item) => {
+                                let temp = item?.quantity * item?.rate
+                                count += temp;
+                            })
+                            res.status(200).json({
+                                success: true,
+                                message: "Success",
+                                status: 200,
+                                data: response,
+                                totalExpenseAmount: count,
+                            });
                         }
                     })
                     .catch(error => {
@@ -73,13 +83,6 @@ exports.getExpenseDataHandler = (req, res) => {
                             message: error
                         })
                     });
-                res.status(200).json({
-                    success: true,
-                    message: "Success",
-                    status: 200,
-                    data: response,
-                    totalExpenseAmount: expenseDetailData
-                });
             };
         })
         .catch(error => {
@@ -91,6 +94,7 @@ exports.getExpenseDataHandler = (req, res) => {
                 });
             };
         });
+
 };
 
 exports.updateExpenseDataHandler = (req, res) => {
