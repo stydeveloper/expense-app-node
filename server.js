@@ -15,10 +15,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const authRoutes = require('./routes/auth.routes');
 const expenseRoutes = require('./routes/expense.route');
 const expenseDetailRoutes = require('./routes/expenseDetail.route');
+const userProfileRoutes = require('./routes/user.route');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/expense', expenseRoutes);
 app.use('/api/expense-detail', expenseDetailRoutes);
+app.use('/api/user', userProfileRoutes);
 
 console.log('MONGODB_URL ', process.env.MONGODB_URL)
 
