@@ -45,8 +45,9 @@ exports.updateUserProfileHandler = (req, res) => {
     let id = req?.params?.id;
     User.findOne({ _id: userId })
         .then(user => {
+            console.log('user :>> ', user);
             if (!user) {
-                return res.status(200).json({
+                return res.status(400).json({
                     success: false,
                     status: 404,
                     message: "No user found."
@@ -55,8 +56,20 @@ exports.updateUserProfileHandler = (req, res) => {
             user.userName = req?.body?.userName;
             user.email = req?.body?.email;
             user.phone = req?.body?.phone;
-            user.password = bcrypt.hashSync(req?.body?.password, 8);
-
+            
+            if (req?.body?.password.length > 1 && req?.body?.password.length < 8) {
+                return res.status(400).json({
+                    success: false,
+                    status: 400,
+                    message: "Password must be at least 8 characters long."
+                })
+            } else if (req?.body?.password.length >= 8) {
+                user.password = bcrypt.hashSync(req?.body?.password, 8);
+            } else {
+                user.password = user.password;
+            }
+            // user.password = bcrypt.hashSync(req?.body?.password, 8);
+            console.log('Updated user :>> ', user);
             user.save()
                 .then(response => {
                     return res.status(200).json({
