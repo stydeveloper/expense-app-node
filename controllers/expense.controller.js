@@ -135,31 +135,25 @@ exports.updateExpenseDataHandler = (req, res) => {
 
 exports.deleteExpenseDataHandler = (req, res) => {
     let id = req?.params?.id;
-    // ExpenseDetail.findByIdAndDelete(id)
-    //     .then(detailResponse => {
-    //         if (detailResponse) {
-    //             return res.status(200).json({
-    //                 success: true,
-    //                 status: 200,
-    //                 message: "Expense data deleted successfully!"
-    //             })
-    //         }
-    //     })
-    //     .catch(expenseDetailError => {
-    //         return res.status(500).json({
-    //             success: false,
-    //             status: 500,
-    //             message: expenseDetailError
-    //         })
-    //     })
     Expense.findByIdAndDelete(id)
         .then(response => {
             if (response) {
-                return res.status(200).json({
-                    success: true,
-                    status: 200,
-                    message: "Expense data deleted successfully!"
-                })
+                ExpenseDetail.deleteMany({ expense_Id: id })
+                    .then(response2 => {
+                        return res.status(200).json({
+                            success: true,
+                            status: 200,
+                            message: "Expense data deleted successfully!",
+                            expenseDetail: response2
+                        })
+                    })
+                    .catch(error => {
+                        return res.status(500).json({
+                            success: false,
+                            status: 500,
+                            message: error
+                        })
+                    })
             }
         })
         .catch(error => {

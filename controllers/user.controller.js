@@ -2,6 +2,7 @@ const db = require('../models');
 const User = db.user;
 const jwt = require('jsonwebtoken');
 const config = require('../config/auth.config');
+const bcrypt = require('bcryptjs');
 
 const getIdByHeader = (data) => {
     let userId;
@@ -36,5 +37,47 @@ exports.getProfileDataHandler = (req, res) => {
                 message: error,
                 status: 500
             });
+        })
+};
+
+exports.updateUserProfileHandler = (req, res) => {
+    const userId = getIdByHeader(req);
+    let id = req?.params?.id;
+    User.findOne({ _id: userId })
+        .then(user => {
+            if (!user) {
+                return res.status(200).json({
+                    success: false,
+                    status: 404,
+                    message: "No user found."
+                });
+            };
+            user.userName = req?.body?.userName;
+            user.email = req?.body?.email;
+            user.phone = req?.body?.phone;
+            user.password = bcrypt.hashSync(req?.body?.password, 8);
+
+            user.save()
+                .then(response => {
+                    return res.status(200).json({
+                        success: true,
+                        status: 200,
+                        message: "Profile updated successfully!",
+                    })
+                })
+                .catch(error => {
+                    return res.status(500).json({
+                        success: false,
+                        status: 500,
+                        message: error
+                    })
+                })
+        })
+        .catch(error => {
+            return res.status(500).json({
+                success: false,
+                status: 500,
+                message: error
+            })
         })
 }
